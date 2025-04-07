@@ -22,13 +22,12 @@ class YOLO9:
         self,
         model: CocoModels,
         device: str,
+        classes: Dict[int, float],  # class id -> confidence threshold
         dnn: bool = False,
         half: bool = False,
         batch_size: int = 1,  # batch size
-        conf_thres: float = 0.25,
-        iou_thres: float = 0.45,
+        iou_threshold: float = 0.45,
         max_det: int = 1000,
-        classes: Optional[Dict[int, float]] = None,  # class id -> confidence threshold
     ):
         weights_dir = Path(__file__).parent / 'weights'
         weights_dir.mkdir(exist_ok=True)
@@ -36,14 +35,14 @@ class YOLO9:
 
         self.weights_path = weights_dir / f'{model.value}'
         self.device = select_device(device)
-        self.conf_thres = conf_thres
-        self.iou_thres = iou_thres
+        self.conf_thres = min(classes.values()) if classes else 0.25
+        self.iou_thres = iou_threshold
         self.max_det = max_det
         self.classes = classes
         if not self.weights_path.exists():
             LOGGER.info(f"Downloading {self.weights_path.name} from GitHub releases...")
             import requests
-            url = f"https://github.com/alejandroalfonsoyero/yolov9/releases/download/v1.0.0/{model.value}.pt"
+            url = f"https://github.com/alejandroalfonsoyero/yolov9/releases/download/v1.0.2/{model.value}.pt"
             response = requests.get(url, stream=True)
             response.raise_for_status()
 
@@ -71,11 +70,10 @@ class YOLO9:
         detections = []
         for det in pred:
             confidence, class_id = det[4].tolist(), int(det[5].tolist())
-            if isinstance(self.classes, dict):
-                if class_id not in self.classes:
-                    continue
-                if confidence < self.classes[class_id]:
-                    continue
+            if class_id not in self.classes:
+                continue
+            if confidence < self.classes[class_id]:
+                continue
             x1, y1, x2, y2 = (det[0:4] / self.img_size).tolist()
             polygon = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
             detections.append((polygon, confidence, class_id))
