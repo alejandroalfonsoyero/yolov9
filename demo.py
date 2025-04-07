@@ -1,10 +1,10 @@
 import cv2
-from yolo9 import YOLO9
+from yolo9 import YOLO9, CocoModels
 import numpy as np
 
 if __name__ == "__main__":
     yolo = YOLO9(
-        model_name="yolov9-c",
+        model=CocoModels.YOLO9_L,
         device="cpu",
         conf_thres=0.25,
         iou_thres=0.45,
@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     img = cv2.imread("man_and_horse.webp")
     detections = yolo.detect(img)
-    
+
     for detection in detections:
         polygon, confidence, class_id = detection
         # Convert polygon points to integer coordinates for drawing

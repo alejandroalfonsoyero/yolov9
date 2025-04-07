@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -9,10 +10,17 @@ from yolo9.utils.general import LOGGER, non_max_suppression
 from yolo9.utils.torch_utils import select_device
 
 
+class CocoModels(Enum):
+    YOLO9_N = "yolov9-n.pt"
+    YOLO9_S = "yolov9-e.pt"
+    YOLO9_M = "yolov9-m.pt"
+    YOLO9_L = "yolov9-s.pt"
+
+
 class YOLO9:
     def __init__(
         self,
-        model_name: str,
+        model: CocoModels,
         device: str,
         dnn: bool = False,
         half: bool = False,
@@ -26,7 +34,7 @@ class YOLO9:
         weights_dir.mkdir(exist_ok=True)
         data = Path(__file__).parent / 'data' / 'coco.yaml'
 
-        self.weights_path = weights_dir / f'{model_name}.pt'
+        self.weights_path = weights_dir / f'{model.value}'
         self.device = select_device(device)
         self.conf_thres = conf_thres
         self.iou_thres = iou_thres
@@ -35,7 +43,7 @@ class YOLO9:
         if not self.weights_path.exists():
             LOGGER.info(f"Downloading {self.weights_path.name} from GitHub releases...")
             import requests
-            url = f"https://github.com/WongKinYiu/yolov9/releases/download/v0.1/{model_name}.pt"
+            url = f"https://github.com/alejandroalfonsoyero/yolov9/releases/download/v1.0.0/{model.value}.pt"
             response = requests.get(url, stream=True)
             response.raise_for_status()
 
