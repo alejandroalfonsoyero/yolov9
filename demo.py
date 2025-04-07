@@ -4,10 +4,9 @@ import numpy as np
 
 if __name__ == "__main__":
     yolo = YOLO9(
-        model=CocoModels.YOLO9_L,
+        model=CocoModels.YOLO9_C,
         device="cpu",
-        conf_thres=0.25,
-        iou_thres=0.45,
+        iou_threshold=0.45,
         max_det=1000,
         classes={0: 0.5, 17: 0.5}
     )

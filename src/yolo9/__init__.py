@@ -11,10 +11,10 @@ from yolo9.utils.torch_utils import select_device
 
 
 class CocoModels(Enum):
-    YOLO9_N = "yolov9-n.pt"
-    YOLO9_S = "yolov9-e.pt"
-    YOLO9_M = "yolov9-m.pt"
-    YOLO9_L = "yolov9-s.pt"
+    YOLO9_C = "yolov9-c"
+    YOLO9_E = "yolov9-e"
+    YOLO9_M = "yolov9-m"
+    YOLO9_S = "yolov9-s"
 
 
 class YOLO9:
@@ -33,7 +33,7 @@ class YOLO9:
         weights_dir.mkdir(exist_ok=True)
         data = Path(__file__).parent / 'data' / 'coco.yaml'
 
-        self.weights_path = weights_dir / f'{model.value}'
+        self.weights_path = weights_dir / f'{model.value}.pt'
         self.device = select_device(device)
         self.conf_thres = min(classes.values()) if classes else 0.25
         self.iou_thres = iou_threshold
