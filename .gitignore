@@ -168,3 +168,4 @@ deb_pre_build.sh
 deb_build.sh
 
 weights/
+output.jpg

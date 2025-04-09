@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == "__main__":
     yolo = YOLO9(
-        model=CocoModels.YOLO9_C,
+        model=CocoModels.YOLO9_C_SEG,
         device="cpu",
         iou_threshold=0.45,
         max_det=1000,
@@ -14,24 +14,30 @@ if __name__ == "__main__":
     img = cv2.imread("man_and_horse.webp")
     detections = yolo.detect(img)
 
-    for detection in detections:
-        polygon, confidence, class_id = detection
+    for polygon, confidence, class_id, class_name in detections:
         # Convert polygon points to integer coordinates for drawing
         pts = []
+        textx, texty =  -1, -1
         for x, y in polygon:
-            pts.append((int(x * img.shape[1]), int(y * img.shape[0])))
+            x_, y_ = int(x * img.shape[1]), int(y * img.shape[0])
+            pts.append((x_, y_))
+            if textx == -1 or x_ < textx:
+                textx = x_
+            if texty == -1 or y_ < texty:
+                texty = y_
+        texty = 0 if texty < 10 else texty - 10
         
         cv2.polylines(
             img,
             pts=[np.array(pts)],
             isClosed=True,
             color=(0, 255, 0),
-            thickness=1,
+            thickness=2,
         )
 
         # Add class id and confidence text
-        text = f"class: {class_id} conf: {confidence:.2f}"
-        cv2.putText(img, text, (pts[0][0], pts[0][1] - 10), 
+        text = f"{class_name} {confidence:.2f}"
+        cv2.putText(img, text, (textx, texty), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Save the annotated image
