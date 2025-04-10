@@ -4,14 +4,14 @@ import numpy as np
 
 if __name__ == "__main__":
     yolo = YOLO9(
-        model=CocoModels.YOLO9_C_SEG,
+        model=CocoModels.YOLO9_M_CARPLATE,
         device="cpu",
         iou_threshold=0.45,
         max_det=1000,
-        classes={0: 0.5, 17: 0.5}
+        classes={0: 0.1, 1: 0.1, 2: 0.1}
     )
 
-    img = cv2.imread("man_and_horse.webp")
+    img = cv2.imread("automovil.jpg")
     detections = yolo.detect(img)
 
     for polygon, confidence, class_id, class_name in detections:
