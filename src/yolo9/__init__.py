@@ -12,20 +12,10 @@ from yolo9.utils.segment.general import process_mask, masks2segments
 from yolo9.data.class_names import coco_names, hardhat_names, carplate_names
 
 
-class ModelWeight(Enum):
-    YOLO9_C = "yolov9-c"
-    YOLO9_E = "yolov9-e"
-    YOLO9_M = "yolov9-m"
-    YOLO9_S = "yolov9-s"
-    YOLO9_M_HARDHAT = "yolov9-m-hardhat"
-    YOLO9_M_CARPLATE = "yolov9-m-carplate"
-    YOLO9_C_SEG = "yolov9-c-seg"
-
-
 class YOLO9:
     def __init__(
         self,
-        model: ModelWeight,
+        model: str,
         device: str,
         classes: Dict[int, float],  # class id -> confidence threshold
         dnn: bool = False,
@@ -38,8 +28,8 @@ class YOLO9:
         weights_dir.mkdir(exist_ok=True)
         data = Path(__file__).parent / 'data' / 'coco.yaml'
 
-        self.model_name = model.value
-        self.weights_path = weights_dir / f'{model.value}.pt'
+        self.model_name = model
+        self.weights_path = weights_dir / f'{model}.pt'
         self.device = select_device(device)
         self.conf_thres = min(classes.values()) if classes else 0.25
         self.iou_thres = iou_threshold
@@ -48,7 +38,7 @@ class YOLO9:
         if not self.weights_path.exists():
             LOGGER.info(f"Downloading {self.weights_path.name} from GitHub releases...")
             import requests
-            url = f"https://github.com/alejandroalfonsoyero/yolov9/releases/download/v1.0.2/{model.value}.pt"
+            url = f"https://github.com/alejandroalfonsoyero/yolov9/releases/download/v1.0.2/{model}.pt"
             response = requests.get(url, stream=True)
             response.raise_for_status()
 
