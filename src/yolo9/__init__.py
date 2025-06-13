@@ -9,7 +9,8 @@ from yolo9.models.common import DetectMultiBackend
 from yolo9.utils.general import LOGGER, non_max_suppression, scale_boxes, scale_segments
 from yolo9.utils.torch_utils import select_device
 from yolo9.utils.segment.general import process_mask, masks2segments
-from yolo9.data.class_names import coco_names, hardhat_names, carplate_names
+from yolo9.data.class_names import coco_names, hardhat_names, carplate_names, \
+    firesmoke_names, gas_leak_names
 
 
 class YOLO9:
@@ -54,6 +55,10 @@ class YOLO9:
             self.class_names = hardhat_names
         elif "carplate" in self.model_name:
             self.class_names = carplate_names
+        elif "gasleak" in self.model_name:
+            self.class_names = gas_leak_names
+        elif "fire-smoke" in self.model_name:
+            self.class_names = firesmoke_names
         else:
             self.class_names = coco_names
 
@@ -82,6 +87,10 @@ class YOLO9:
                     segments = [scale_segments(im.shape[2:], x, im.shape[2:], normalize=True) for x in segments]
                     
                     for segment, confidence, class_id in zip(segments, det[:, 4].tolist(), det[:, 5].tolist()):
+                        if class_id not in self.classes:
+                            continue
+                        if confidence < self.classes[class_id]:
+                            continue
                         detections.append((segment, confidence, class_id, self.class_names[class_id]))
         else:        
             pred = self.model(im)

@@ -17,3 +17,12 @@ hardhat_names = {
 carplate_names = {
     0: "car plate"
 }
+
+firesmoke_names = {
+    0: "smoke",
+    1: "fire"
+}
+
+gas_leak_names = {
+    0: "gas leak"
+}

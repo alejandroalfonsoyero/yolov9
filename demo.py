@@ -1,17 +1,17 @@
 import cv2
-from yolo9 import YOLO9, ModelWeight
+from yolo9 import YOLO9
 import numpy as np
 
 if __name__ == "__main__":
     yolo = YOLO9(
-        model=ModelWeight.YOLO9_M_CARPLATE,
+        model="yolov9-c-seg",
         device="cpu",
         iou_threshold=0.45,
         max_det=1000,
         classes={0: 0.1, 1: 0.1, 2: 0.1}
     )
 
-    img = cv2.imread("carplates.webp")
+    img = cv2.imread("man_and_horse.webp")
     detections = yolo.detect(img)
 
     for polygon, confidence, class_id, class_name in detections:
